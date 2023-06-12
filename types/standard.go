@@ -1,7 +1,7 @@
-package gomimetypes
+package mimego
 
 var (
-	standardTypes = map[string][]string{
+	StandardTypes = map[string][]string{
 		"application/andrew-inset":             {"ez"},
 		"application/applixware":               {"aw"},
 		"application/atom+xml":                 {"atom"},

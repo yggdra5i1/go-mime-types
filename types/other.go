@@ -1,7 +1,7 @@
-package gomimetypes
+package mimego
 
 var (
-	otherTypes = map[string][]string{
+	OtherTypes = map[string][]string{
 		"application/prs.cww":                                                       {"cww"},
 		"application/vnd.1000minds.decision-model+xml":                              {"1km"},
 		"application/vnd.3gpp.pic-bw-large":                                         {"plb"},

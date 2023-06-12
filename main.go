@@ -1,4 +1,4 @@
-package gomimetypes
+package mimego
 
 import "fmt"
 
