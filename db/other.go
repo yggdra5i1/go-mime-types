@@ -1,4 +1,4 @@
-package mimego
+package db
 
 var (
 	OtherTypes = map[string][]string{
