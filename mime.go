@@ -39,19 +39,29 @@ func (m *Mime) Define(typesMap map[string][]string, force bool) {
 	}
 }
 
-func New() *Mime {
+func buildMime(types []map[string][]string) *Mime {
 	m := &Mime{}
 	m.types = make(map[string]string)
 	m.extensions = make(map[string]string)
-	m.Define(db.StandardTypes, false)
-	m.Define(db.OtherTypes, false)
+
+	for _, t := range types {
+		m.Define(t, false)
+	}
+
 	return m
 }
 
+func New() *Mime {
+	var types = []map[string][]string{
+		db.StandardTypes,
+		db.OtherTypes,
+	}
+
+	return buildMime(types)
+}
+
 func NewLite() *Mime {
-	m := &Mime{}
-	m.types = make(map[string]string)
-	m.extensions = make(map[string]string)
-	m.Define(db.StandardTypes, false)
-	return m
+	var types = []map[string][]string{db.StandardTypes}
+
+	return buildMime(types)
 }
