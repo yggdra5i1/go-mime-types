@@ -65,3 +65,8 @@ func NewLite() *Mime {
 
 	return buildMime(types)
 }
+
+func (m *Mime) GetExtension(mimeType string) string {
+	ext, _ := m.extensions[mimeType]
+	return ext
+}
