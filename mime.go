@@ -12,11 +12,22 @@ type Mime struct {
 	extensions map[string]string
 }
 
+func (m *Mime) defineTypeForExtensions(mimeType string, extensions []string) {
+	extensions = utils.Map(extensions, strings.ToLower)
+	mimeType = strings.ToLower(mimeType)
+
+	for _, ext := range extensions {
+		if string(ext[0]) == "*" {
+			continue
+		}
+
+		m.types[ext] = mimeType
+	}
+}
+
 func (m *Mime) Define(typesMap map[string][]string, force bool) {
 	for mimeType, extensions := range typesMap {
-		extensions = utils.Map(extensions, strings.ToLower)
-
-		mimeType = strings.ToLower(mimeType)
+		m.defineTypeForExtensions(mimeType, extensions)
 
 		for i := 0; i < len(extensions); i++ {
 			ext := extensions[i]
