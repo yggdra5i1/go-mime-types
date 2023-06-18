@@ -9,13 +9,10 @@ import (
 
 type Mime struct {
 	types      map[string]string
-	extensions map[string]string
+	extensions map[string][]string
 }
 
 func (m *Mime) defineTypeForExtensions(mimeType string, extensions []string) {
-	extensions = utils.Map(extensions, strings.ToLower)
-	mimeType = strings.ToLower(mimeType)
-
 	for _, ext := range extensions {
 		if string(ext[0]) == "*" {
 			continue
@@ -25,35 +22,34 @@ func (m *Mime) defineTypeForExtensions(mimeType string, extensions []string) {
 	}
 }
 
+func (m *Mime) defineExtensionsForType(mimeType string, extensions []string, force bool) {
+	if _, ok := m.extensions[mimeType]; force || !ok {
+		extensions = utils.Map(extensions, func(s string) string {
+			if string(s[0]) != "*" {
+				return s
+			} else {
+				return s[1:]
+			}
+		})
+
+		m.extensions[mimeType] = extensions
+	}
+}
+
 func (m *Mime) Define(typesMap map[string][]string, force bool) {
 	for mimeType, extensions := range typesMap {
+		extensions = utils.Map(extensions, strings.ToLower)
+		mimeType = strings.ToLower(mimeType)
+
 		m.defineTypeForExtensions(mimeType, extensions)
-
-		for i := 0; i < len(extensions); i++ {
-			ext := extensions[i]
-
-			if string(ext[0]) == "*" {
-				continue
-			}
-
-			m.types[ext] = mimeType
-		}
-
-		if _, ok := m.extensions[mimeType]; force || !ok {
-			ext := extensions[0]
-			if string(ext[0]) != "*" {
-				m.extensions[mimeType] = ext
-			} else {
-				m.extensions[mimeType] = ext[1:]
-			}
-		}
+		m.defineExtensionsForType(mimeType, extensions, force)
 	}
 }
 
 func buildMime(types []map[string][]string) *Mime {
 	m := &Mime{}
 	m.types = make(map[string]string)
-	m.extensions = make(map[string]string)
+	m.extensions = make(map[string][]string)
 
 	for _, t := range types {
 		m.Define(t, false)
@@ -71,13 +67,13 @@ func New() *Mime {
 	return buildMime(types)
 }
 
-func NewLite() *Mime {
+func Lite() *Mime {
 	var types = []map[string][]string{db.StandardTypes}
 
 	return buildMime(types)
 }
 
-func (m *Mime) GetExtension(mimeType string) string {
-	ext, _ := m.extensions[mimeType]
-	return ext
+func (m *Mime) GetExtensions(mimeType string) []string {
+	exts, _ := m.extensions[mimeType]
+	return exts
 }
