@@ -1,6 +1,7 @@
 package mimego
 
 import (
+	"regexp"
 	"strings"
 
 	"github.com/yggdra5i1/mimego/db"
@@ -71,6 +72,25 @@ func Lite() *Mime {
 	var types = []map[string][]string{db.StandardTypes}
 
 	return buildMime(types)
+}
+
+// Lookup a mime type based on extension
+func (m *Mime) GetType(path string) (string, bool) {
+	lastRegexp := regexp.MustCompile(`^.*[/\\]`)
+	extRegexp := regexp.MustCompile(`^.*\.`)
+
+	last := strings.ToLower(lastRegexp.ReplaceAllString(path, ""))
+	ext := strings.ToLower(extRegexp.ReplaceAllString(last, ""))
+
+	hasPath := len(last) < len(path)
+	hasDot := len(ext) < len(last)-1
+
+	if hasDot || !hasPath {
+		mimeType, ok := m.types[ext]
+		return mimeType, ok
+	}
+
+	return "", false
 }
 
 func (m *Mime) GetExtensions(mimeType string) []string {
