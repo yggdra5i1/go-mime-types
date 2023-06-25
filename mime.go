@@ -94,6 +94,14 @@ func (m *Mime) GetType(path string) (string, bool) {
 }
 
 func (m *Mime) GetExtensions(mimeType string) []string {
-	exts, _ := m.extensions[mimeType]
-	return exts
+	re := regexp.MustCompile(`^\s*([^;\s]*)`)
+	typeMatch := re.FindStringSubmatch(mimeType)
+	if len(typeMatch) > 1 {
+		mimeType = typeMatch[1]
+	}
+	exts, ok := m.extensions[strings.ToLower(mimeType)]
+	if ok {
+		return exts
+	}
+	return nil
 }
