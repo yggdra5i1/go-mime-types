@@ -48,9 +48,10 @@ func (m *Mime) Define(typesMap map[string][]string, force bool) {
 }
 
 func buildMime(types []map[string][]string) *Mime {
-	m := &Mime{}
-	m.types = make(map[string]string)
-	m.extensions = make(map[string][]string)
+	m := &Mime{
+		types:      make(map[string]string),
+		extensions: make(map[string][]string),
+	}
 
 	for _, t := range types {
 		m.Define(t, false)
