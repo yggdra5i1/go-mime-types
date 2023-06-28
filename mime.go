@@ -9,23 +9,31 @@ import (
 	"github.com/yggdra5i1/mimego/utils"
 )
 
+const (
+	redefineErrMsg = `Attempt to change mapping for \"%s\" extension from \"%s\" to \"%s\". 
+					  Pass force=true to allow this, otherwise remove \"%s\" from the list 
+					  of extensions for \"%s\".`
+)
+
 type Mime struct {
 	types      map[string]string
 	extensions map[string][]string
 }
 
-func (m *Mime) defineTypeForExtensions(mimeType string, extensions []string) {
+func (m *Mime) defineTypeForExtensions(mimeType string, extensions []string, force bool) {
 	for _, ext := range extensions {
 		if string(ext[0]) == "*" {
 			continue
 		}
-
+		if _, ok := m.types[ext]; !force && ok {
+			panic(fmt.Sprintf(redefineErrMsg, ext, m.types[ext], mimeType, ext, mimeType))
+		}
 		m.types[ext] = mimeType
 	}
 }
 
-func (m *Mime) defineExtensionsForType(mimeType string, extensions []string, force bool) {
-	if _, ok := m.extensions[mimeType]; force || !ok {
+func (m *Mime) defineExtensionsForType(mimeType string, extensions []string) {
+	if _, ok := m.extensions[mimeType]; !ok {
 		extensions = utils.Map(extensions, func(s string) string {
 			if string(s[0]) != "*" {
 				return s
@@ -43,17 +51,8 @@ func (m *Mime) Define(typeMap map[string][]string, force bool) {
 		extensions = utils.Map(extensions, strings.ToLower)
 		mimeType = strings.ToLower(mimeType)
 
-		for _, ext := range extensions {
-			if ext[0] == '*' {
-				continue
-			}
-			if !force && m.types[ext] != "" {
-				panic(fmt.Sprintf("Attempt to change mapping for \"%s\" extension from \"%s\" to \"%s\". Pass `force=true` to allow this, otherwise remove \"%s\" from the list of extensions for \"%s\".", ext, m.types[ext], mimeType, ext, mimeType))
-			}
-			m.types[ext] = mimeType
-		}
-
-		m.defineExtensionsForType(mimeType, extensions, force)
+		m.defineTypeForExtensions(mimeType, extensions, force)
+		m.defineExtensionsForType(mimeType, extensions)
 	}
 }
 
