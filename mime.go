@@ -1,6 +1,7 @@
 package mimego
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 
@@ -37,12 +38,21 @@ func (m *Mime) defineExtensionsForType(mimeType string, extensions []string, for
 	}
 }
 
-func (m *Mime) Define(typesMap map[string][]string, force bool) {
-	for mimeType, extensions := range typesMap {
+func (m *Mime) Define(typeMap map[string][]string, force bool) {
+	for mimeType, extensions := range typeMap {
 		extensions = utils.Map(extensions, strings.ToLower)
 		mimeType = strings.ToLower(mimeType)
 
-		m.defineTypeForExtensions(mimeType, extensions)
+		for _, ext := range extensions {
+			if ext[0] == '*' {
+				continue
+			}
+			if !force && m.types[ext] != "" {
+				panic(fmt.Sprintf("Attempt to change mapping for \"%s\" extension from \"%s\" to \"%s\". Pass `force=true` to allow this, otherwise remove \"%s\" from the list of extensions for \"%s\".", ext, m.types[ext], mimeType, ext, mimeType))
+			}
+			m.types[ext] = mimeType
+		}
+
 		m.defineExtensionsForType(mimeType, extensions, force)
 	}
 }
