@@ -84,10 +84,12 @@ func New(types []map[string][]string) *Mime {
 	return buildMime(defaultTypes)
 }
 
-func Lite() *Mime {
-	var types = []map[string][]string{db.StandardTypes}
+func Lite(types []map[string][]string) *Mime {
+	if len(types) > 0 {
+		return buildMime(types)
+	}
 
-	return buildMime(types)
+	return buildMime([]map[string][]string{db.StandardTypes})
 }
 
 // Lookup a mime type based on extension
