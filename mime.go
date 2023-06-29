@@ -15,6 +15,13 @@ const (
 					  of extensions for \"%s\".`
 )
 
+var (
+	defaultTypes = []map[string][]string{
+		db.StandardTypes,
+		db.OtherTypes,
+	}
+)
+
 type Mime struct {
 	types      map[string]string
 	extensions map[string][]string
@@ -69,13 +76,12 @@ func buildMime(types []map[string][]string) *Mime {
 	return m
 }
 
-func New() *Mime {
-	var types = []map[string][]string{
-		db.StandardTypes,
-		db.OtherTypes,
+func New(types []map[string][]string) *Mime {
+	if len(types) > 0 {
+		return buildMime(types)
 	}
 
-	return buildMime(types)
+	return buildMime(defaultTypes)
 }
 
 func Lite() *Mime {
