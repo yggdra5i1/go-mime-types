@@ -15,6 +15,13 @@ const (
 					  of extensions for \"%s\".`
 )
 
+const (
+	textMediaType  = "text"
+	imageMediaType = "image"
+	audioMediaType = "audio"
+	videoMediaType = "video"
+)
+
 var (
 	defaultTypes = []map[string][]string{
 		db.StandardTypes,
@@ -125,19 +132,19 @@ func (m *Mime) GetExtensions(mimeType string) []string {
 }
 
 func IsText(mimeType string) bool {
-	return getMediaType(mimeType) == "text"
+	return getMediaType(mimeType) == textMediaType
 }
 
 func IsImage(mimeType string) bool {
-	return getMediaType(mimeType) == "image"
+	return getMediaType(mimeType) == imageMediaType
 }
 
 func IsAudio(mimType string) bool {
-	return getMediaType(mimType) == "audio"
+	return getMediaType(mimType) == audioMediaType
 }
 
 func IsVideo(mimeType string) bool {
-	return getMediaType(mimeType) == "video"
+	return getMediaType(mimeType) == videoMediaType
 }
 
 func getMediaType(mimeType string) string {
