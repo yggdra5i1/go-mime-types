@@ -123,3 +123,23 @@ func (m *Mime) GetExtensions(mimeType string) []string {
 	}
 	return nil
 }
+
+func IsText(mimeType string) bool {
+	return getMediaType(mimeType) == "text"
+}
+
+func IsImage(mimeType string) bool {
+	return getMediaType(mimeType) == "image"
+}
+
+func IsAudio(mimType string) bool {
+	return getMediaType(mimType) == "audio"
+}
+
+func IsVideo(mimeType string) bool {
+	return getMediaType(mimeType) == "video"
+}
+
+func getMediaType(mimeType string) string {
+	return strings.Split(mimeType, "/")[0]
+}
